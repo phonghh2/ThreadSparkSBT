@@ -43,27 +43,30 @@ object ThreadSpark {
         val conf = new SparkConf().setMaster("local[*]").setAppName("CamusApp")
         val sc = new SparkContext(conf)
         val hiveContext = new org.apache.spark.sql.hive.HiveContext(sc)
-        val df = hiveContext.read.json("hdfs://10.15.171.36:54310/home/phonghh/project/demo/camusDisk/topics/Scoring/hourly/*/*/*/*")
+        val df = hiveContext.read.json("hdfs://10.15.171.41:54310/home/phonghh2/project/demo/camusDisk/topics/Scoring/hourly/*/*/*/*")
         df.registerTempTable("HDFS")
 
         MongoUrl.defineDb(DefaultMongoIdentifier, "mongodb://10.15.171.35:27017/ScoringCardDB")
         val DBListModel = ModelInfo.findAll
         for(x<-DBListModel){
-          RangeScoring(x.id.toString(), hiveContext)
+          RangeScoring(x.id.toString(), hiveContext, x.name.toString())
         }
         TopBotOption("d848e3f9-9ae6-4c46-ba46-62adb892e94d", hiveContext)
         TopBotOption("878578e5-c9f4-430e-a129-446eaa69b374", hiveContext)
+        TopBotOption("1a021ec7-83af-46ff-af31-70ba8600ff77", hiveContext)
+        TopBotOption("9daa9841-c94a-498d-9a32-28cd8f91ec80", hiveContext)
       }
     }
     thread.start
     Thread.sleep(7200*1000) // slow the loop down a bit
   }
 
-  def RangeScoring(ModelId : String, hiveContext:HiveContext) = {
+  def RangeScoring(ModelId : String, hiveContext:HiveContext, ModelName:String) = {
     val query = hiveContext.sql("SELECT rating_code, rating_status, COUNT(scoring) application_count, SUM(scoring)/COUNT(scoring) TB FROM HDFS WHERE rate.modelid = '" + ModelId + "' GROUP BY rating_code, rating_status ORDER BY TB")
     val a = query.toJSON.collect()
     val r = new RedisClient("10.15.171.41", 6379)
     r.del("Spark-RangeScoring-" + ModelId)
+    r.rpush("Spark-RangeScoring-" + ModelId, "{\"modelName\":\"" + ModelName + "\"}")
     for (x <- a ){
       r.rpush("Spark-RangeScoring-" + ModelId, x)
     }
