@@ -9,10 +9,11 @@ import java.net.URI
 import com.mongodb.{Mongo, ServerAddress}
 import com.redis._
 import net.liftweb.common.Full
+import net.liftweb.json._
 import net.liftweb.mongodb._
-import net.liftweb.mongodb.record.field.{BsonRecordListField, StringRefField, StringPk}
+import net.liftweb.mongodb.record.field.{BsonRecordListField, StringPk, StringRefField}
 import net.liftweb.mongodb.record.{BsonMetaRecord, BsonRecord, MongoMetaRecord, MongoRecord}
-import net.liftweb.record.field.{IntField, DoubleField, StringField}
+import net.liftweb.record.field.{DoubleField, IntField, StringField}
 import org.apache.spark.sql.hive.HiveContext
 import org.apache.spark.{SparkConf, SparkContext}
 
@@ -52,6 +53,7 @@ object ThreadSpark {
         val DBListModel = ModelInfo.findAll
         for(x<-DBListModel){
           RangeScoring(x.id.toString(), hiveContext, x.name.toString())
+          PercentOptionOfFactor(x.id.toString(), hiveContext,x.name.toString())
         }
 
         val DBListFT = Factor.findAll
@@ -69,7 +71,7 @@ object ThreadSpark {
               TopBotOption(y.FactorOptionId.toString(), hiveContext)
           }
         }
-
+        PercentOptionOfFactor("cd602b77-b570-4a56-8590-eb65e55b8210", hiveContext,"test")
 
 
       }
@@ -79,14 +81,28 @@ object ThreadSpark {
   }
 
   def PercentOptionOfFactor(ModelId : String, hiveContext:HiveContext, ModelName:String) = {
-    val query = hiveContext.sql("SELECT resultin.factor_id, resultin.factor_option_id FROM HDFS WHERE rate.modelid = '" + ModelId + "' GROUPBY ")
+    val query = hiveContext.sql("SELECT part.factor_name, part.factor_option_name, COUNT(scoring) application_count " +
+                                "FROM HDFS LATERAL VIEW explode(resultin) resultinable AS part " +
+                                "WHERE rate.modelid = '" + ModelId + "' " +
+                                "GROUP BY part.factor_name, part.factor_option_name")
     val a = query.toJSON.collect()
+    var listFactor:List[String] = List()
+    for(x<-a){
+      val b = parse(x)
+      listFactor = listFactor ::: List(b.asInstanceOf[JObject].values.apply("factor_name").toString)
+    }
+
     val r = new RedisClient("10.15.171.41", 6379)
-//    r.del("Spark-PercentOptionOfFactor-" + ModelId)
-//    r.rpush("Spark-PercentOptionOfFactor-" + ModelId, "{\"modelName\":\"" + ModelName + "\"}")
-//    for (x <- a ){
-//      r.rpush("Spark-PercentOptionOfFactor-" + ModelId, x)
-//    }
+    r.del("Spark-PercentOptionOfFactor-" + ModelId)
+    r.rpush("Spark-PercentOptionOfFactor-" + ModelId, "{\"modelName\":\"" + ModelName + "\"}")
+    for (x <- a ){
+      r.rpush("Spark-PercentOptionOfFactor-" + ModelId, x)
+    }
+    r.del("Spark-PercentOptionOfFactor-ListFactor-" + ModelId)
+    for(y<-listFactor.distinct) {
+      r.rpush("Spark-PercentOptionOfFactor-ListFactor-" + ModelId, y)
+    }
+
     println("PercentOptionOfFactor " + ModelId + " DONE")
   }
 
