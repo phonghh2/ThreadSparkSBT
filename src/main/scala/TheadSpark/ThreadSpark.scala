@@ -39,11 +39,12 @@ object ThreadSpark {
   }
 
   def main(args: Array[String]) {
+    val conf = new SparkConf().setMaster("local[*]").setAppName("CamusApp")
+    val sc = new SparkContext(conf)
+    val hiveContext = new org.apache.spark.sql.hive.HiveContext(sc)
+
     val thread = new Thread {
       override def run {
-        val conf = new SparkConf().setMaster("local[*]").setAppName("CamusApp")
-        val sc = new SparkContext(conf)
-        val hiveContext = new org.apache.spark.sql.hive.HiveContext(sc)
         val df = hiveContext.read.json("hdfs://10.15.171.41:54310/home/phonghh2/project/demo/camusDisk/topics/Scoring/hourly/*/*/*/*")
         df.registerTempTable("HDFS")
 
@@ -68,15 +69,25 @@ object ThreadSpark {
               TopBotOption(y.FactorOptionId.toString(), hiveContext)
           }
         }
-//
-//        TopBotOption("d848e3f9-9ae6-4c46-ba46-62adb892e94d", hiveContext)
-//        TopBotOption("878578e5-c9f4-430e-a129-446eaa69b374", hiveContext)
-//        TopBotOption("1a021ec7-83af-46ff-af31-70ba8600ff77", hiveContext)
-//        TopBotOption("9daa9841-c94a-498d-9a32-28cd8f91ec80", hiveContext)
+
+
+
       }
     }
     thread.start
     Thread.sleep(7200*1000) // slow the loop down a bit
+  }
+
+  def PercentOptionOfFactor(ModelId : String, hiveContext:HiveContext, ModelName:String) = {
+    val query = hiveContext.sql("SELECT resultin.factor_id, resultin.factor_option_id FROM HDFS WHERE rate.modelid = '" + ModelId + "' GROUPBY ")
+    val a = query.toJSON.collect()
+    val r = new RedisClient("10.15.171.41", 6379)
+//    r.del("Spark-PercentOptionOfFactor-" + ModelId)
+//    r.rpush("Spark-PercentOptionOfFactor-" + ModelId, "{\"modelName\":\"" + ModelName + "\"}")
+//    for (x <- a ){
+//      r.rpush("Spark-PercentOptionOfFactor-" + ModelId, x)
+//    }
+    println("PercentOptionOfFactor " + ModelId + " DONE")
   }
 
   def RangeScoring(ModelId : String, hiveContext:HiveContext, ModelName:String) = {
