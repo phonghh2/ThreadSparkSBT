@@ -9,7 +9,6 @@ import java.net.URI
 import com.mongodb.{Mongo, ServerAddress}
 import com.redis._
 import net.liftweb.common.Full
-import net.liftweb.json._
 import net.liftweb.mongodb._
 import net.liftweb.mongodb.record.field.{BsonRecordListField, StringPk, StringRefField}
 import net.liftweb.mongodb.record.{BsonMetaRecord, BsonRecord, MongoMetaRecord, MongoRecord}
@@ -86,21 +85,11 @@ object ThreadSpark {
                                 "WHERE rate.modelid = '" + ModelId + "' " +
                                 "GROUP BY part.factor_name, part.factor_option_name")
     val a = query.toJSON.collect()
-    var listFactor:List[String] = List()
-    for(x<-a){
-      val b = parse(x)
-      listFactor = listFactor ::: List(b.asInstanceOf[JObject].values.apply("factor_name").toString)
-    }
-
     val r = new RedisClient("10.15.171.41", 6379)
     r.del("Spark-PercentOptionOfFactor-" + ModelId)
     r.rpush("Spark-PercentOptionOfFactor-" + ModelId, "{\"modelName\":\"" + ModelName + "\"}")
     for (x <- a ){
       r.rpush("Spark-PercentOptionOfFactor-" + ModelId, x)
-    }
-    r.del("Spark-PercentOptionOfFactor-ListFactor-" + ModelId)
-    for(y<-listFactor.distinct) {
-      r.rpush("Spark-PercentOptionOfFactor-ListFactor-" + ModelId, y)
     }
 
     println("PercentOptionOfFactor " + ModelId + " DONE")
