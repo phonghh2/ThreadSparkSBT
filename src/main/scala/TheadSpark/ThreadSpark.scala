@@ -73,7 +73,7 @@ object ThreadSpark {
         }
         PercentOptionOfFactor("cd602b77-b570-4a56-8590-eb65e55b8210", hiveContext,"test")
 
-
+        sc.stop()
       }
     }
     thread.start
