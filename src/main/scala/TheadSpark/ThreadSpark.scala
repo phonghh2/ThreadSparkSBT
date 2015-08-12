@@ -42,11 +42,12 @@ object ThreadSpark {
     val conf = new SparkConf().setMaster("local[*]").setAppName("CamusApp")
     val sc = new SparkContext(conf)
     val hiveContext = new org.apache.spark.sql.hive.HiveContext(sc)
+    val df = hiveContext.read.json("hdfs://10.15.171.41:54310/home/phonghh2/project/demo/camusDisk/topics/Scoring/hourly/*/*/*/*")
+    df.registerTempTable("HDFS")
 
     val thread = new Thread {
       override def run {
-        val df = hiveContext.read.json("hdfs://10.15.171.41:54310/home/phonghh2/project/demo/camusDisk/topics/Scoring/hourly/*/*/*/*")
-        df.registerTempTable("HDFS")
+
 
         MongoUrl.defineDb(DefaultMongoIdentifier, "mongodb://10.15.171.35:27017/ScoringCardDB")
         val DBListModel = ModelInfo.findAll
@@ -72,7 +73,7 @@ object ThreadSpark {
         }
         PercentOptionOfFactor("cd602b77-b570-4a56-8590-eb65e55b8210", hiveContext,"test")
 
-        sc.stop()
+//        sc.stop()
       }
     }
     thread.start
