@@ -83,7 +83,8 @@ object ThreadSpark {
     val query = hiveContext.sql("SELECT part.factor_name, part.factor_option_name, COUNT(scoring) application_count " +
                                 "FROM HDFS LATERAL VIEW explode(resultin) resultinable AS part " +
                                 "WHERE rate.modelid = '" + ModelId + "' " +
-                                "GROUP BY part.factor_name, part.factor_option_name")
+                                "GROUP BY part.factor_name, part.factor_option_name" +
+                                "ORDER BY part.factor_name")
     val a = query.toJSON.collect()
     val r = new RedisClient("10.15.171.41", 6379)
     r.del("Spark-PercentOptionOfFactor-" + ModelId)
