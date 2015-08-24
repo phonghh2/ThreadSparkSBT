@@ -40,7 +40,7 @@ object ThreadSpark {
 
   def main(args: Array[String]) {
 
-    MongoUrl.defineDb(DefaultMongoIdentifier, "mongodb://10.15.171.35:27017/ScoringCardDB")
+    MongoUrl.defineDb(DefaultMongoIdentifier, "mongodb://UserReadWrite:Aa123aA@10.15.171.35:27017/ScoringCardDB")
     val thread = new Thread {
       override def run {
 
