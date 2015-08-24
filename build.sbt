@@ -11,6 +11,7 @@ libraryDependencies ++= {
     "org.apache.spark" %% "spark-streaming" % "1.4.1",
     "org.apache.spark" %% "spark-hive" % "1.4.1",
     "net.debasishg" %% "redisclient" % "3.0",
+    "org.mongodb" %% "casbah" % "2.8.1",
     "org.apache.hadoop" % "hadoop-client" % "2.6.0",
     "net.liftweb" %% "lift-mongodb-record" % liftVersion
   )
