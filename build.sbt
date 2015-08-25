@@ -1,3 +1,9 @@
+
+
+import com.github.retronym.SbtOneJar._
+
+oneJarSettings
+
 name := "ThreadSparkSBT"
 
 version := "1.0"
@@ -12,6 +18,7 @@ libraryDependencies ++= {
     "org.apache.spark" %% "spark-hive" % "1.4.1",
     "net.debasishg" %% "redisclient" % "3.0",
     "org.mongodb" %% "casbah" % "2.8.1",
+    "commons-lang" % "commons-lang" % "2.6",
     "org.apache.hadoop" % "hadoop-client" % "2.6.0",
     "net.liftweb" %% "lift-mongodb-record" % liftVersion
   )
