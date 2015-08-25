@@ -45,7 +45,6 @@ object ThreadSpark {
       override def run {
 
         val conf = new SparkConf().setMaster("local[*]").setAppName("CamusApp")
-                                  .setJars(Array(""))
         val sc = new SparkContext(conf)
         val hiveContext = new org.apache.spark.sql.hive.HiveContext(sc)
         val df = hiveContext.read.json("hdfs://10.15.171.41:54310/home/phonghh2/project/demo/camusDisk/topics/Scoring/hourly/*/*/*/*")
