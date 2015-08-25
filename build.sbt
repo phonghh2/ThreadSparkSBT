@@ -1,9 +1,5 @@
 
 
-import com.github.retronym.SbtOneJar._
-
-oneJarSettings
-
 name := "ThreadSparkSBT"
 
 version := "1.0"

@@ -2,6 +2,12 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/alpha.iml" filepath="$PROJECT_DIR$/.idea/modules/alpha.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/alpha-build.iml" filepath="$PROJECT_DIR$/.idea/modules/alpha-build.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/beta.iml" filepath="$PROJECT_DIR$/.idea/modules/beta.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/beta-build.iml" filepath="$PROJECT_DIR$/.idea/modules/beta-build.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/multi.iml" filepath="$PROJECT_DIR$/.idea/modules/multi.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/multi-build.iml" filepath="$PROJECT_DIR$/.idea/modules/multi-build.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/threadsparksbt.iml" filepath="$PROJECT_DIR$/.idea/modules/threadsparksbt.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/threadsparksbt-build.iml" filepath="$PROJECT_DIR$/.idea/modules/threadsparksbt-build.iml" />
     </modules>
