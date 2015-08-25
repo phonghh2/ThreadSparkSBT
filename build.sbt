@@ -20,6 +20,7 @@ libraryDependencies ++= {
     "org.mongodb" %% "casbah" % "2.8.1",
     "commons-lang" % "commons-lang" % "2.6",
     "org.apache.hadoop" % "hadoop-client" % "2.6.0",
+    "org.eclipse.jetty.orbit" % "javax.servlet" % "3.0.0.v201112011016" % "test" artifacts Artifact("javax.servlet", "jar", "jar"),
     "net.liftweb" %% "lift-mongodb-record" % liftVersion
   )
 }
